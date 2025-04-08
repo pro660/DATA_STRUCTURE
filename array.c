@@ -12,7 +12,7 @@ int main(){
     
     print1(array,MAX_SIZE);
 
-    return 0;
+    return 0; //dddd
 }
 
 void print1(int *ptr, int rows){ //리스트는 0번 인덱스의 주소값을 가짐짐
