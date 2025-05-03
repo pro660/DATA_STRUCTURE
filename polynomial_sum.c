@@ -19,14 +19,14 @@ int main(){
     int startA = avail, startB, finishA, finishB;
     int startD, finishD, sizeA, sizeB;
 
-    printf("Enter the number of terms in polynomial A: "); //다항식 a의 size를 입력
+    printf("Enter the number of terms in polynomial A: "); //다항식 a의 항의 개수
     scanf("%d",&sizeA);
     input_Poly(sizeA);
 
     finishA = avail - 1;
     startB = avail; 
 
-    printf("\nEnter the number of terms in polynomial B: "); //다항식 b의 size를 입력
+    printf("\nEnter the number of terms in polynomial B: "); //다항식 b의 항의 개수
     scanf("%d",&sizeB);
     input_Poly(sizeB);
 
