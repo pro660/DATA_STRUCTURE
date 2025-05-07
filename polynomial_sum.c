@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #define COMPARE(x,y)((x)<(y)?-1:(x)>(y)?1:0)
 #define MAX_TERMS 100
+
 void padd(int ,int, int, int, int *,int *);
 void attach(int , int);
 void prn_Poly(int, int);
@@ -89,7 +90,10 @@ void input_Poly(int size){ //다항식을 계수와 지수로 나누어 차례�
 }
 void prn_Poly(int startD, int finishD){ //덧셈이 완료된 최종다항식을 출력하는 형식
     for (int i = startD; i <= finishD; i++) {
-        printf("%dx^%d", terms[i].coef, terms[i].expon);
+        if(terms[i].expon != 0)
+            printf("%dx^%d", terms[i].coef, terms[i].expon);
+        else    
+            printf("%d", terms[i].coef);
         if (i < finishD && terms[i+1].coef >= 0)
             printf(" + ");
     }
