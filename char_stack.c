@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_STACK_SIZE 11
+#define MAX_STACK_SIZE 10
 
 typedef struct{
 	char key;
@@ -9,6 +9,7 @@ typedef struct{
 
 void stackFull();
 void stackEmpty();
+void exit_Program_0();
 void push(char item); //문자를 입력하기 위해 char 타입으로 매개변수를 받아줌
 element pop();
 
@@ -16,15 +17,30 @@ element stack[MAX_STACK_SIZE]; //구조체형 배열(스택 선언)
 int top = -1;
 
 int main(){
+	char ch;
+	int n;
+
+	while(1){
+		printf("Press 1 to push, 2 to pop, or 0 to exit : ");
+		scanf("%d", &n);
+
+		switch (n)
+		{
+			case 1: 
+				printf("Enter the character to push : ");
+				scanf(" %c", &ch);
+				push(ch);
+				break;
+		
+			case 2:
+				printf("Popped character : %c\n", pop());
+				break;
+
+			case 0:
+				exit_Program_0();
+		}
+	}
 	
-	push('A');
-	push('P');
-	push('P');
-	push('L');
-	push('E');
-	printf("%c", pop());
-	printf("%c", pop());
-	printf("%c", pop());
 	return 0;
 }
 
@@ -50,6 +66,11 @@ void stackFull(){
 
 void stackEmpty(){
 	fprintf(stderr, "stack is Empty already");
+	exit(1);
+}
+
+void exit_Program_0(){
+	fprintf(stderr, "Exit the program");
 	exit(1);
 }
 

@@ -11,16 +11,35 @@ int rear = 0;
 
 void queueFull();
 void queueEmpty();
+void exit_Program_0();
 void addq(element item);
 element deleteq();
 
 int main(){
 	
-	addq((element){ .key = 'A'}); // char자료형을 사용하지 않고 직접 구조체 자료형으로 입력
-	addq((element){ .key = 'P'});
+	char ch;
+	int n;
 
-	printf("%c", deleteq());
-	printf("%c", deleteq());
+	while(1){
+		printf("Press 1 to push, 2 to pop, or 0 to exit : ");
+		scanf("%d", &n);
+
+		switch (n)
+		{
+			case 1: 
+				printf("Enter the character to add : ");
+				scanf(" %c", &ch);
+				addq((element){ .key = ch}); // char자료형을 사용하지 않고 직접 구조체 자료형으로 입력
+				break;
+		
+			case 2:
+				printf("deleted character : %c\n", deleteq());
+				break;
+
+			case 0:
+				exit_Program_0();
+		}
+	}
 	
 	return 0;
 }
@@ -48,6 +67,12 @@ void queueEmpty(){
 	fprintf(stderr, "Queue is Empty already");
 	exit(1);
 }
+
+void exit_Program_0(){
+	fprintf(stderr, "Exit the program");
+	exit(1);
+}
+
 
 
 
