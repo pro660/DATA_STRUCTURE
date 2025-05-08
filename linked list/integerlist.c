@@ -12,7 +12,7 @@ typedef struct listNode{
 
     int data;
     listPointer link;
-};
+} listNode;
 
 
 //함수 선언
