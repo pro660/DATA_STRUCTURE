@@ -27,6 +27,8 @@ listPointer first = NULL;
 int main(){
 
     create2();
+    insert(&first, first);
+    delete(&first, first, first->link);
     printList();
 
     return 0;
@@ -54,7 +56,7 @@ void printList(){
         printf("%4d", first->data);
 }
 
-void insert(listPointer *first, listPointer x){
+void insert(listPointer *first, listPointer x){ //x는 선행노드
     listPointer temp;
 
     MALLOC(temp, sizeof(*temp));
@@ -71,7 +73,7 @@ void insert(listPointer *first, listPointer x){
     }
 }
 
-void delete(listPointer *first, listPointer trail, listPointer x){
+void delete(listPointer *first, listPointer trail, listPointer x){ //trail:이전노드, x:삭제할 노드
     if(trail)
         trail->link = x->link;
     else
