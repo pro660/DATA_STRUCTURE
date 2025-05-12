@@ -22,15 +22,15 @@ void push(element item);
 element pop();
 void printList();
 
-stack_pointer top;
+stack_pointer top = NULL;
 
 int main(){
     element item;
-    item.key = 1;
-    push(item);
-    item.key = 2;
+    item.key = 5;
     push(item);
     item.key = 3;
+    push(item);
+    item.key = 1;
     push(item);
     
     printList();
@@ -44,8 +44,10 @@ int main(){
 void printList(){
     stack_pointer temp = top;
     printf("The list contains: ");
+    printf("top->");
     for(; temp; temp=temp->link)
         printf("%4d", temp->item.key);
+    printf("  ->NULL");
     printf("\n");
 }
 
