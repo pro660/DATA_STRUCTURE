@@ -28,14 +28,13 @@ void printList();
 
 int main(){
     element item;
-    /*
     item.key = 10;
     addq(item);
     item.key = 3;
     addq(item);
     item.key = 0;
     addq(item);
-    */
+    
 
     printList();
     deleteq();
@@ -48,10 +47,10 @@ int main(){
 void printList(){
     queuePointer temp = front;
     printf("The list contains: ");
-    //printf("front->");
+    printf("front->");
     for(; temp; temp=temp->link)
         printf("%4d", temp->data.key);
-    //printf("   ->rear");
+    printf("   ->rear");
     printf("\n");
 }
 
