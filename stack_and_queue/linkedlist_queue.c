@@ -18,6 +18,7 @@ typedef struct queue{
 } queue;
 
 queuePointer front, rear;
+
 void queueEmpty();
 void addq(element item);
 element deleteq();
@@ -27,13 +28,15 @@ void printList();
 
 int main(){
     element item;
-    item.key = 1;
-    addq(item);
-    item.key = 2;
+    /*
+    item.key = 10;
     addq(item);
     item.key = 3;
     addq(item);
-    
+    item.key = 0;
+    addq(item);
+    */
+
     printList();
     deleteq();
     printf("deleted\n");
@@ -45,8 +48,10 @@ int main(){
 void printList(){
     queuePointer temp = front;
     printf("The list contains: ");
+    //printf("front->");
     for(; temp; temp=temp->link)
         printf("%4d", temp->data.key);
+    //printf("   ->rear");
     printf("\n");
 }
 
@@ -77,6 +82,6 @@ element deleteq(){
 }
 
 void queueEmpty(){
-    fprintf(stderr, "stack is Empty already\n");
+    fprintf(stderr, "queue is Empty already\n");
     exit(EXIT_FAILURE);
 }
