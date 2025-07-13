@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // 타입 정의
 typedef enum { /** 토큰에 직접적인 이름을 부여하기 위한 enum 타입 */
@@ -13,9 +14,8 @@ int icp[] = {20,19,12,12,13,13,13,0};
 // 함수 선언
 int eval(void);
 precedence getToken(char*, int*);
-// 중위식->후위식 으로 변환 시 사용하는 함수
-// void postfix(void); 
-// void printToken(precedence token);
+void postfix(void); 
+void printToken(precedence token);
 int pop();
 void push(int);
 void stackFull();
@@ -30,9 +30,10 @@ int top;
 char expr[MAX_EXPR_SIZE];
 
 int main(){ 
-    printf("Enter the infix notation(Enter '~' to finish) : ");
+    printf("Enter the infix notation(end with '~') : ");
     EnterNot();
-    // postfix();
+    printf("Postfix notation : ");
+    postfix();
 
     printf("Result => %d\n", eval());
     return 0; 
@@ -87,62 +88,75 @@ precedence getToken(char *symbol, int *n){
     }  
 }
 
-// 중위식 표기를 후위식 표기로 전환할 때 쓰는 함수(단, 서로 다른 스택을 만들어서 사용하거나, expr에 따로 symbol을 저장하는 등 추가조정이 필요함.)
-// void printToken(precedence token) {
-//     switch(token) {
-//         case lparen:   printf("("); break;
-//         case rparen:   printf(")"); break;
-//         case plus:     printf("+"); break;
-//         case minus:    printf("-"); break;
-//         case times:    printf("*"); break;
-//         case divide:   printf("/"); break;
-//         case mod:      printf("%%"); break; // %는 printf에서 %%로 출력
-//         case eos:      break; // 아무것도 출력하지 않음
-//         default:       break; // operand는 이미 출력됨
-//     }
-// }
-
-// void postfix(void){
-//     /* 수식을 후위표기식으로 출력한다. 수식 스트링, 스택, top은 전역적이다. */
-//     char symbol;
-//     precedence token;
-//     int n = 0, i = 0;
-//     top = 0;
-//     /* eos에 스택을 삽입한다 */
-//     stack[0] = eos;
-//     for(token = getToken(&symbol, &n); token!=eos; token = getToken(&symbol, &n)){
-//         if(token == operand)
-//             printf("%c", symbol);
-//         else if(token == rparen){
-//         /* 왼쪽 괄호가 나올 때 까지 토큰들을 제거해서 출력시킴 */
-//         while(stack[top] != lparen) 
-//             printToken(pop());
-//         pop(); /* 왼쪽 괄호를 버린다 */
-//         }
-//         else{
-//             /* symbol의 isp가 token의 icp보다 크거나 같으면 symbol을 제거하고 출력시킴 */
-//             while(isp[stack[top]] >= icp[token])
-//                 printToken(pop());
-//             push(token);
-//         }
-//     }
-//     while((token=pop())!=eos){
-//         expr[i++] = (char)(token);
-//         printToken(token);
-//     }
-//     printf("\n");
-// }
-
-void EnterNot(){
-    char n, i=0;
-
-    while(1){
-        scanf("%c", &n);
-        if(n != '\n')
-            expr[i++] = n;
-        else 
-            break;
+char token2char(precedence token){
+    switch(token){
+        case lparen:  return '(';
+        case rparen:  return ')';
+        case plus:    return '+';
+        case minus:   return '-';
+        case times:   return '*';
+        case divide:  return '/';
+        case mod:     return '%';
+        default:      return '?';
     }
+}
+
+void printToken(precedence token) {
+    putchar(token2char(token));
+}
+
+void postfix(void){
+    /* 수식을 후위표기식으로 출력한다. 수식 스트링, 스택, top은 전역적이다. */
+    char symbol;
+    precedence token;
+    int n = 0, i = 0;
+
+    char tmp[MAX_EXPR_SIZE];
+
+    top = 0;
+    /* eos에 스택을 삽입한다 */
+    stack[0] = eos;
+    for(token = getToken(&symbol, &n); token!=eos; token = getToken(&symbol, &n)){
+        if(token == operand){
+            putchar(symbol);
+            tmp[i++] = symbol;
+        }
+        else if(token == rparen){
+        /* 왼쪽 괄호가 나올 때 까지 토큰들을 제거해서 출력시킴 */
+            while(stack[top] != lparen){
+                precedence op = pop();
+                printToken(op);
+                tmp[i++] = token2char(op);
+            }
+            pop(); /* 왼쪽 괄호를 버린다 */
+        }
+        else{
+            /* symbol의 isp가 token의 icp보다 크거나 같으면 symbol을 제거하고 출력시킴 */
+            while(isp[stack[top]] >= icp[token]){
+                precedence op = pop();
+                printToken(op);
+                tmp[i++] = token2char(op);
+            }
+            push(token);
+        }
+    }
+    while((token=pop())!=eos){
+        printToken(token);
+        tmp[i++] = token2char(token);
+    }
+    printf("\n");
+
+    tmp[i] = '\0';
+    strcpy(expr, tmp);
+}
+
+void EnterNot(void){
+    char ch;
+    int i = 0;
+    while(scanf("%c", &ch) == 1 && ch != '~'){
+        if(ch != '\n') expr[i++] = ch;
+    }
+    expr[i] = '\0';   // 널 종료
 }
 
 void push(int item){ //top이 사이즈-1보다 크거나 같으면 Full, 따라서 종료 or Full이 아닐 시 item 삽입
