@@ -26,7 +26,7 @@ void push(element item);
 element pop();
 void stackFull();
 void stackEmpty();
-/* 아 피곤하다. */
+/* 아 피곤하다ㅠㅠ */
 /* 전역 변수 선언 */
 offsets move[8] = { /* 각 방향에 대한 이동 배열 */
     {-1,  0}, // N
