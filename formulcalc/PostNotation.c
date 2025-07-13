@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_STACK_SIZE 5
 
 // 타입 정의
 typedef enum { /** 토큰에 직접적인 이름을 부여하기 위한 enum 타입 */
@@ -18,21 +17,25 @@ int pop();
 void push(int);
 void stackFull();
 void stackEmpty();
+void EnterNot();
 
 //전역 변수 선언
+#define MAX_EXPR_SIZE 100
 int top = -1;
+#define MAX_STACK_SIZE 5
 int stack[MAX_STACK_SIZE];
-char expr[] = "62/3-42*+";
+char expr[MAX_EXPR_SIZE];
 
-int main(){
-    printf("%d", eval());
+int main(){ 
+    printf("Enter the postfix notation(Enter '~' to finish) : ");
+    EnterNot();
+
+    printf("Result => %d\n", eval());
     return 0; 
 }
 
 /** 후위 표기식을 계산하는 함수 */
 int eval(void){
-    {/* 전역변수로 되어 있는 후위 표기식 expr을 연산한다. NULL은 수식의 끝을 나타낸다. stack과 top은 전역변수이다.
-       함수 getToken은 토큰의 타입과 문자 심벌을 반환한다. 피연산자는 한 문자로 된 숫자임을 가정한다.*/}
     precedence token;
     char symbol;
     int op1, op2;
@@ -53,7 +56,8 @@ int eval(void){
                 case minus: push(op1-op2); break;
                 case times: push(op1*op2); break;
                 case divide: push(op1/op2); break;
-                case mod: push(op1%op2);
+                case mod: push(op1%op2); break;
+                default: break;
             }
         }
         token = getToken(&symbol, &n);   
@@ -73,23 +77,36 @@ precedence getToken(char *symbol, int *n){
         case '/': return divide;
         case '*': return times;
         case '%': return mod;
+        case '~':
         case '\0': return eos;
         default : return operand;
     }
 }
 
+void EnterNot(){
+    int n, i=0;
+
+    while(1){
+        scanf("%c", &n);
+        if(n != '\n')
+            expr[i++] = n;
+        else 
+            break;
+    }
+}
+
 void push(int item){ //top이 사이즈-1보다 크거나 같으면 Full, 따라서 종료 or Full이 아닐 시 item 삽입
 
-	if(top>=MAX_STACK_SIZE-1)	
+	if(top>=MAX_STACK_SIZE-1) {
 		stackFull();
-		
+    }
 	stack[++top] = item;
 }
 
 int pop(){
-	if(top==-1)
+	if(top==-1) {
 		stackEmpty();
-	
+    }
 	return stack[top--];
 }
 
