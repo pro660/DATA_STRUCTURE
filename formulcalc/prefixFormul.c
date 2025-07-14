@@ -49,38 +49,54 @@ int eval(void){
     precedence token;
     char symbol;
     int op1, op2;
-    int n = strlen(expr) -1; /* 수식 스트링을 위한 카운터 */
+    int n = strlen(expr) - 1; // 오른쪽부터 왼쪽으로
     top = -1;
-    
-    while(n >= 0){
-        symbol = expr[n--]; /* 오른쪽부터 왼쪽으로 문자를 가져옴 */
 
-        switch(symbol){
-            case '(': token=lparen; break;
-            case ')': token=rparen; break;
-            case '+': token=plus; break;
-            case '-': token=minus; break;
-            case '*': token=times; break;
-            case '/': token=divide; break;
-            case '%': token=mod; break;
-            case '\0': token=eos; break;
-            default : token=operand; break;
+    while(n >= 0){
+        symbol = expr[n];
+
+        // 공백 무시
+        if(symbol == ' '){
+            n--;
+            continue;
         }
 
-        if(token == operand)
-            push(symbol - '0'); // 피연산자는 스택에 push
-        else{
-            /* 두 피연산자를 pop하여 연산을 수행 한 후, 그 결과를 스택에 삽입함 */
-            op1 = pop();
-            op2 = pop();
-
-            switch(token){
-                case plus: push(op1+op2); break;
-                case minus: push(op1-op2); break;
-                case times: push(op1*op2); break;
-                case divide: push(op1/op2); break;
-                case mod: push(op1%op2); break;
-                default: break;
+        // 숫자면 여러 자리 숫자 추출
+        if(symbol >= '0' && symbol <= '9'){
+            int num = 0;
+            int base = 1;
+            // 오른쪽부터 왼쪽으로 읽으므로 base 사용
+            while(n >= 0 && expr[n] >= '0' && expr[n] <= '9'){
+                num += (expr[n] - '0') * base;
+                base *= 10;
+                n--;
+            }
+            push(num);
+        } else {
+            // 연산자 처리
+            switch(symbol){
+                case '(': token=lparen; break;
+                case ')': token=rparen; break;
+                case '+': token=plus; break;
+                case '-': token=minus; break;
+                case '*': token=times; break;
+                case '/': token=divide; break;
+                case '%': token=mod; break;
+                case '\0': token=eos; break;
+                default : token=operand; break;
+            }
+            if(token != operand){
+                op1 = pop();
+                op2 = pop();
+                switch(token){
+                    case plus: push(op1+op2); break;
+                    case minus: push(op1-op2); break;
+                    case times: push(op1*op2); break;
+                    case divide: push(op1/op2); break;
+                    case mod: push(op1%op2); break;
+                    default: break;
+                }
+                n--;
             }
         }
     }
@@ -122,44 +138,66 @@ void printToken(precedence token) {
 }
 
 void prefix(void){
-    /* 수식을 후위표기식으로 출력한다. 수식 스트링, 스택, top은 전역적이다. */
     char symbol;
     precedence token;
     int n = 0, i = 0;
-
     char tmp[MAX_EXPR_SIZE];
 
     top = 0;
-    /* eos에 스택을 삽입한다 */
     stack[0] = eos;
-    for(token = getToken(&symbol, &n); token!=eos; token = getToken(&symbol, &n)){
-        if(token == operand){
-            tmp[i++] = symbol;
-        }
-        else if(token == rparen)    
-            push(token);
-        else if(token == lparen){
-            while(stack[top] != rparen){ // 뒤집힌 수식의 '(', 즉 원래의 ')'
-                precedence op = pop();
-                tmp[i++] = token2char(op);
+    while (expr[n] != '\0') {
+        // 숫자(여러 자리) 처리
+        if (expr[n] >= '0' && expr[n] <= '9') {
+            int start = n;
+            while (expr[n] >= '0' && expr[n] <= '9') n++;
+            // 숫자 복사
+            for (int j = start; j < n; j++) {
+                tmp[i++] = expr[j];
             }
-            pop(); /* 오른쪽 괄호를 버린다 */
+            tmp[i++] = ' ';
         }
-        else{ // rparen과 일반 연산자 처리
-            // 스택 top의 우선순위가 현재 토큰보다 높거나 같으면 pop
-            // (rparen의 isp는 0이므로, lparen을 만날 때까지 절대 pop되지 않음)
-            while(isp[stack[top]] > icp[token]){
-                precedence op = pop();
-                tmp[i++] = token2char(op);
+        // 괄호 및 연산자 처리
+        else {
+            symbol = expr[n++];
+            switch(symbol){
+                case '(': 
+                    while(stack[top] != rparen){
+                        precedence op = pop();
+                        tmp[i++] = token2char(op);
+                        tmp[i++] = ' ';
+                    }
+                    pop();
+                    break;
+                case ')':
+                    push(rparen);
+                    break;
+                case '+': case '-': case '*': case '/': case '%':
+                {
+                    precedence token;
+                    switch(symbol){
+                        case '+': token=plus; break;
+                        case '-': token=minus; break;
+                        case '*': token=times; break;
+                        case '/': token=divide; break;
+                        case '%': token=mod; break;
+                    }
+                    while(isp[stack[top]] > icp[token]){
+                        precedence op = pop();
+                        tmp[i++] = token2char(op);
+                        tmp[i++] = ' ';
+                    }
+                    push(token);
+                    break;
+                }
+                default:
+                    break;
             }
-            push(token);
         }
     }
     while((token=pop())!=eos){
         tmp[i++] = token2char(token);
+        tmp[i++] = ' ';
     }
-    printf("\n");
-
     tmp[i] = '\0';
     strrev(tmp);
     strcpy(expr, tmp);
