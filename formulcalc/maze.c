@@ -95,8 +95,11 @@ void path(void){
         while(dir<8 && !found){
             nextRow = row + move[dir].vert;
             nextCol = col + move[dir].horiz;
-            if(nextRow==EXIT_ROW && nextCol==EXIT_COL)
+            if ( nextRow >= 0 && nextRow < ROW
+                && nextCol >= 0 && nextCol < COL
+                && nextRow==EXIT_ROW && nextCol==EXIT_COL ) {
                 found = TRUE;
+}
             else if(!maze[nextRow][nextCol] && !mark[nextRow][nextCol] 
                     && nextRow >= 0 && nextRow < ROW && nextCol >= 0 && nextCol < COL){
                 mark[nextRow][nextCol] = 1;
