@@ -1,3 +1,4 @@
+/* 행렬의 빠른 전치 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

@@ -1,3 +1,4 @@
+/* 트리의 전위, 중위, 후위 순회 */
 #include <stdio.h>
 #include <stdlib.h>   // malloc, free
 
