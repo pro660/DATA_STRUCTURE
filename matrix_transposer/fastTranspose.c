@@ -11,7 +11,7 @@ typedef struct
 } term; //행,열,값을 표현하기 위해 하나의 term이라는 자료형을 생성
 
 //함수 선언
-void transpose(term a[],term b[]);
+void fastTranspose(term a[],term b[]);
 void matrix_Input(term a[]);
 void matrix_Output(term trans_a[]);
 
@@ -20,20 +20,20 @@ term a[MAX_TERMS];
 term trans_a[MAX_TERMS];
 
 int main(){
-	clock_t start, end; 
-	double Transpose_cpu_time;
-
+    clock_t start, end; 
+	double fastTranspose_cpu_time;
+	
 	matrix_Input(a);
 
-	start = clock();
-	transpose(a,trans_a);
-	end = clock();
+    start = clock();
+    fastTranspose(a,trans_a);
+    end = clock();
 
 	matrix_Output(trans_a);
-	
-	Transpose_cpu_time = (double) (end - start) / CLOCKS_PER_SEC;
-	printf("Transpose time complexity: %f seconds\n", Transpose_cpu_time);
 
+    fastTranspose_cpu_time = (double) (end - start) / CLOCKS_PER_SEC;
+	printf("fastTranspose time complexity: %f seconds\n", fastTranspose_cpu_time);
+	
 	return 0;
 }
 
@@ -59,33 +59,34 @@ void matrix_Output(term trans_a[]){ //출력하는 함수
 	
 	int i;
 	
-	printf("\nTransposed matrix:\n");
+	printf("\nfastTransposed matrix:\n");
 	for(i = 1; i <= trans_a[0].value; i++) { // 유효한 값에 대한 행과 열, 그 위치에 대한 값만 출력
 		printf("Row: %d, Column: %d, Value: %d\n", trans_a[i].row, trans_a[i].col, trans_a[i].value);
 	}
 }
 
-void transpose (term a[], term b[]){ //행렬을 전치하는 알고리즘
+void fastTranspose (term a[], term b[]){ //행렬의 빠른 전치 알고리즘
 
-	int n, i, j, currentb;
+    int rowTerms[MAX_TERMS], startingPos[MAX_TERMS];
+    int i, j, numCols = a[0].col, numTerms = a[0].value;
 
-	n = a[0].value; // n의 초기값으로 행렬에서 유효한 값의 개수를 대입
-
-	b[0].row = a[0].col; //행과 열을 서로 뒤바꿈
+	b[0].row = numCols; //행과 열을 서로 뒤바꿈
 	b[0].col = a[0].row; 
+    b[0].value = numTerms;
 
-	b[0].value = n; 
-
-    if (n>0) { //유효한 값이 1개 이상 있다면 실행
-	    currentb = 1;
-	    for(i=0;  i<a[0].col; i++) // 열을 순차적으로 증가시키는 것
-	        for(j=1;  j<=n;  j++)
-	            if(a[j].col == i) { //a의 열을 오름차순으로 하여 b의 행으로 대입
-		            b[currentb].row = a[j].col;
-		            b[currentb].col = a[j].row;
-		            b[currentb].value = a[j].value;
-		            currentb++;
-		        }
+    if (numTerms>0) { //유효한 값이 1개 이상 있다면 실행
+	    for(i=0;  i<numCols; i++) 
+            rowTerms[i] = 0; 
+        for(i=1; i<=numTerms; i++)
+            rowTerms[a[i].col]++;
+        startingPos[0] = 1;
+        for(i=1; i<numCols; i++)
+            startingPos[i] = startingPos[i-1]+rowTerms[i-1];
+        for(i=1; i<=numTerms; i++){
+            j=startingPos[a[i].col]++;
+            b[j].row = a[i].col; b[j].col = a[i].row;
+            b[j].value = a[i].value;
+        }
 	}
 }
 
