@@ -5,7 +5,7 @@
 /* 슬롯 상태 */
 #define EMPTY    0
 #define OCCUPIED 1
-#define DELETED  2
+#define DELETED  2  
 
 /* 해시 테이블 크기 (소수 권장) */
 #define TABLE_SIZE 97
